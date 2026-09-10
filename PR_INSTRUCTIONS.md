@@ -6,14 +6,19 @@ Suggested branch name:
 Suggested local steps
 ```bash
 git checkout -b feature/add-audit-actorip-backfill
-git add prisma/schema.prisma src/audit/*.js scripts/backfill-audit.js IMPACT_ANALYSIS.md MIGRATION_RUNBOOK.md tests/*.test.js
+# Stage schema, audit code, backfill script, docs, tests, and PR/README/REVIEW updates
+git add prisma/schema.prisma src/audit/*.js scripts/backfill-audit.js IMPACT_ANALYSIS.md MIGRATION_RUNBOOK.md tests/*.test.js PR_DESCRIPTION.md README.md REVIEW.md
 git commit -m "feat(audit): add actorIp and hashVersion (v2); backfill script and docs"
 git push --set-upstream origin feature/add-audit-actorip-backfill
 ```
 
 Open PR (GitHub CLI recommended):
 ```bash
-gh pr create --title "feat(audit): add actorIp + backfill (hashVersion=2)" --body "See IMPACT_ANALYSIS.md and MIGRATION_RUNBOOK.md for details. Includes schema change, audit repo/service updates, backfill utility, tests, and docs." --reviewer @your-privacy-team --assignee @your-self
+gh pr create \
+	--title "feat(audit): add actorIp + backfill (hashVersion=2)" \
+	--body "See IMPACT_ANALYSIS.md and MIGRATION_RUNBOOK.md for details. Includes schema change, audit repo/service updates, backfill utility, tests, and docs." \
+	--reviewer @your-privacy-team \
+	--assignee @your-self
 ```
 
 PR checklist (include in description)
@@ -23,5 +28,6 @@ PR checklist (include in description)
 - [ ] Backfill dry-run executed in staging
 - [ ] Integration tests pass in staging
 - [ ] Rollout and rollback plan included in `MIGRATION_RUNBOOK.md`
+- [ ] `PR_DESCRIPTION.md` updated with change summary and testing steps
+- [ ] `README.md` and `REVIEW.md` updated if docs changed
 
-If you cannot use `gh`, open the PR via the GitHub web UI and paste the same title/body.

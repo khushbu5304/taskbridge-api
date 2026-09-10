@@ -115,6 +115,5 @@ npm run backfill-audit -- --apply --recompute
 Notes:
 - The script requires a built Prisma client and a configured `DATABASE_URL`. Test in staging.
 - I recommend NOT recomputing historical hashes unless policy allows it; prefer leaving historical hashes intact and marking changed rows with `hashVersion` if necessary.
-
-Which of the next steps would you like me to perform now? 
+ 
 

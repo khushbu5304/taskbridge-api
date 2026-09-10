@@ -22,12 +22,13 @@ AuditEntry
 - resourceId (string): ID of affected resource.
 - action (string): e.g., `create`, `update`, `delete`, `status_change`, `notify_enqueued`, `notify_sent`, `notify_failed`.
 - actorId (string|null): User or system actor initiating action.
-- actorOrgId (string|null): Organization context.
+- organizationId (string|null): Organization context (matches JWT `organizationId` claim).
 - timestamp (ISO8601): When action occurred (server time).
 - before (JSON|null): Snapshot before change (nullable).
 - after (JSON|null): Snapshot after change (nullable).
 - metadata (JSON|null): Extra details (requestId, ip, correlation).
 - hash (string): SHA-256 hex of canonicalized immutable fields for tamper evidence.
+- prevHash (string|null): Optional previous entry hash to form a chained ledger.
 
 Notification
 - id (string, uuid): Primary key.
@@ -167,6 +168,14 @@ Response Examples
 }
 ```
 
+Error Responses
+
+- 400 Bad Request: validation failed. Body: `{ code: 'validation_error', message: string, details?: object }`.
+- 401 Unauthorized: missing/invalid JWT.
+- 403 Forbidden: insufficient role/organization mismatch.
+- 404 Not Found: resource not found.
+- 409 Conflict: idempotency conflict or unique constraint violation.
+
 Validation Requirements
 
 - Validate all incoming JSON against schemas (recommend `zod` or `joi`).
@@ -177,6 +186,10 @@ Validation Requirements
 - `recipient` and `payload` shapes depend on `type` (e.g., `email` requires `recipient.email`).
 - `deliverAfter`: ISO8601 and >= now if provided.
 - `idempotencyKey`: max 255 chars; enforce uniqueness window.
+
+Pagination
+
+- Use cursor-based pagination. Each list endpoint returns `meta: { cursor }` for the next page. Avoid offset/limit for large datasets.
 
 Authorization Requirements
 
@@ -193,9 +206,11 @@ Audit Immutability Requirements
 
 - Append-only storage: audit rows must never be updated or deleted by application code.
 
-- Cryptographic chaining:
-  - `hash = SHA256(id || resourceType || resourceId || action || actorId || timestamp || JSON.stringify(before) || JSON.stringify(after) || JSON.stringify(metadata))` (canonicalized).
-  - Optionally store `prevHash` to chain entries (tamper-evident ledger).
+-- Cryptographic chaining:
+  - Compute `hash` over canonicalized JSON fields to ensure deterministic hashing. Example approach:
+    1. Produce a canonical JSON string (RFC8785 or equivalent) of the object: `{ id, resourceType, resourceId, action, actorId, organizationId, timestamp, before, after, metadata }`.
+    2. Compute `hash = SHA256(canonicalJson)` and store as hex.
+  - Optionally store `prevHash` to chain entries (tamper-evident ledger). Verification should recompute hashes and compare.
 
 - DB controls: restrict DB user privileges for audit table to insert-only where possible.
 
@@ -235,6 +250,16 @@ Operational Notes
 - Backfill/migrations: provide scripts to compute `hash` and `prevHash` for historical audits.
 
 - Testing: unit tests for model/service, integration tests for event flows, e2e for notification delivery.
+
+Data Retention & Privacy
+
+- Define retention policy for audit and notification payloads. Redact or truncate PII in `before`/`after` where not required for audits.
+- Provide a data export and deletion workflow that complies with privacy requests; note that audit entries required for compliance should be preserved or redacted rather than deleted.
+
+Rate Limiting
+
+- Apply rate limits to public and authenticated endpoints. Suggested default: 100 req/min per user for mutation endpoints, configurable via gateway.
+- Use `Idempotency-Key` and deduplication to mitigate retries causing duplicated side effects.
 
 Next Steps
 

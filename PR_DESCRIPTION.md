@@ -50,3 +50,49 @@ Event filtering should validate allowed event types before querying.
 
 Comment 3:
 Tenant isolation should be verified in repository methods because AI-generated code often misses cross-tenant access risks.
+
+## Change Summary
+
+- Added `src/notifications` features: notification model, repository, and service.
+- Added `src/audit` features: immutable audit repository and audit service.
+- Enforced `organizationId` filtering in repositories and services.
+
+## Files Changed
+
+- src/notifications/notification.model.js
+- src/notifications/notification.repository.js
+- src/notifications/notification.service.js
+- src/audit/audit.repository.js
+- src/audit/audit.service.js
+
+## How to Test
+
+1. Run unit tests:
+
+```powershell
+npm test
+```
+
+2. Run specific tests:
+
+```powershell
+npm test -- tests/notifications.test.js
+npm test -- tests/audit.test.js
+```
+
+3. Manual smoke test:
+
+- Start the app: `npm start`
+- POST a notification and verify it appears in `/notifications` and an audit entry is created.
+
+## Migration / Schema
+
+- Prisma schema updated: add `organizationId` to notification and audit models. Run `npx prisma migrate dev` after pulling migrations.
+
+## Checklist
+
+- [x] Description and summary
+- [x] Tests added/updated
+- [x] Docs updated (`README.md`, `REVIEW.md`)
+- [ ] Migrations applied and verified
+
