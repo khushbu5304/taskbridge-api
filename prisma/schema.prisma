@@ -1,0 +1,53 @@
+// Prisma schema for Project, AuditEntry, Notification
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  status      String
+  teamId      String
+  organizationId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditEntry {
+  id          String   @id @default(uuid())
+  resourceType String
+  resourceId  String
+  action      String
+  actorId     String?
+  actorOrgId  String?
+  actorIp     String?
+  hashVersion Int      @default(2)
+  timestamp   DateTime @default(now())
+  before      Json?
+  after       Json?
+  metadata    Json?
+  hash        String
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  projectId   String?
+  organizationId String
+  type        String
+  recipient   Json
+  payload     Json
+  status      String
+  attempts    Int      @default(0)
+  lastAttemptAt DateTime?
+  deliverAfter DateTime?
+  isRead      Boolean  @default(false)
+  readAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
