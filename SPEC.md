@@ -21,8 +21,8 @@ AuditEntry
 - resourceType (string): e.g., `Project`, `Notification`.
 - resourceId (string): ID of affected resource.
 - action (string): e.g., `create`, `update`, `delete`, `status_change`, `notify_enqueued`, `notify_sent`, `notify_failed`.
-- actorId (string|null): User or system actor initiating action.
-- organizationId (string|null): Organization context (matches JWT `organizationId` claim).
+-- actorId (string|null): User or system actor initiating action.
+-- actorOrgId (string|null): Organization context (matches JWT `organizationId` claim).
 - timestamp (ISO8601): When action occurred (server time).
 - before (JSON|null): Snapshot before change (nullable).
 - after (JSON|null): Snapshot after change (nullable).
@@ -208,7 +208,7 @@ Audit Immutability Requirements
 
 -- Cryptographic chaining:
   - Compute `hash` over canonicalized JSON fields to ensure deterministic hashing. Example approach:
-    1. Produce a canonical JSON string (RFC8785 or equivalent) of the object: `{ id, resourceType, resourceId, action, actorId, organizationId, timestamp, before, after, metadata }`.
+    1. Produce a canonical JSON string (RFC8785 or equivalent) of the object: `{ id, resourceType, resourceId, action, actorId, actorOrgId, timestamp, before, after, metadata }`.
     2. Compute `hash = SHA256(canonicalJson)` and store as hex.
   - Optionally store `prevHash` to chain entries (tamper-evident ledger). Verification should recompute hashes and compare.
 

@@ -55,7 +55,7 @@ Tenant isolation should be verified in repository methods because AI-generated c
 
 - Added `src/notifications` features: notification model, repository, and service.
 - Added `src/audit` features: immutable audit repository and audit service.
-- Enforced `organizationId` filtering in repositories and services.
+- Enforced organization-scoped filtering across repositories; audits record the org in `actorOrgId`.
 
 ## Files Changed
 
@@ -87,7 +87,7 @@ npm test -- tests/audit.test.js
 
 ## Migration / Schema
 
-- Prisma schema updated: add `organizationId` to notification and audit models. Run `npx prisma migrate dev` after pulling migrations.
+- Prisma schema updated: add `organizationId` to `Notification` and `Project` models; `AuditEntry` stores organization context in `actorOrgId`. Run `npx prisma migrate dev` after pulling migrations.
 
 ## Checklist
 
