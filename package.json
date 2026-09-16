@@ -7,23 +7,25 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "jest --runInBand --detectOpenHandles --forceExit"
+    "start": "node src/index.js",
+    "dev": "node src/index.js",
+    "test": "jest --runInBand --detectOpenHandles --forceExit",
+    "db:push": "prisma db push"
   },
-    "bin": {
-      "backfill-audit": "scripts/backfill-audit.js"
-    },
+  "bin": {
+    "backfill-audit": "scripts/backfill-audit.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@prisma/client": "^7.10.0",
+    "@prisma/client": "5.22.0",
     "express": "^5.2.1",
-    "prisma": "^8.0.0-rc.13",
+    "prisma": "5.22.0",
     "minimist": "^1.2.8",
     "winston": "^3.19.0",
     "zod": "^4.5.4",
-    "better-sqlite3": "^8.1.0",
     "jsonwebtoken": "^9.0.0"
   },
   "devDependencies": {
